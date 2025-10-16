@@ -205,6 +205,22 @@ class Navigation2dNode:
 
         # Camera intrinsics from cached info
         depth_K = np.array(self.latest_info.K).reshape(3, 3)
+        
+        # TF for goal in camera optical frame
+        try:
+            t = self.tf_buffer.lookup_transform(
+                self.latest_info.header.frame_id,  # zed2i_left_camera_optical_frame
+                goal_msg.header.frame_id,  # vision
+                goal_msg.header.stamp,
+                rospy.Duration(0.1)
+            )
+            # import ipdb;ipdb.set_trace()
+            goal_in_cam = tf2_geometry_msgs.do_transform_pose(goal_msg, t)
+            p = goal_in_cam.pose.position
+            goal_3d = np.array([[p.x, p.y, p.z]])
+        except Exception as e:
+            rospy.logwarn(f"TF lookup failed: {e}")
+            return
 
         # Secondary TF (unchanged)
         try:

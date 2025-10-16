@@ -255,7 +255,8 @@ class Navigation2dNode:
             robot_pose_vision.pose.orientation = robot_transform_vision_to_base.transform.rotation
 
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-            rospy.logwarn_throttle(2.0, f"TF lookup {goal_msg.header.frame_id} -> {rospy.get_param("~robot_frame", "base_link")} failed: {e}. Packet will lack robot pose.")
+            robot_frame = rospy.get_param("~robot_frame", "base_link")
+            rospy.logwarn_throttle(2.0, f"TF lookup {goal_msg.header.frame_id} -> {robot_frame} failed: {e}. Packet will lack robot pose.")
 
         ts = depth_msg.header.stamp.to_sec()
 

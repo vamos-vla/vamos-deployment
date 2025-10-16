@@ -1,0 +1,44 @@
+image_topic: ""
+depth_topic: ""
+depth_camera_info_topic: ""
+goal_topic: ""
+robot_frame: ""
+global_frame: ""
+predictor_type: "vlm" # Different types only for testing
+time_threshold: 60 # Time in seconds before the VLM times out and replans
+debug_subscribers: false # Set true to debug topic subscribers
+
+# Trajectory predictor parameters
+num_waypoints_to_complete: 5
+side_offset_for_turn_cam: 0.5
+behind_offset_for_turn_cam: 0.3
+post_rotation_delay: 2.0
+path_topic: "/global_planner/planned_path"
+waypoint_reached_topic: "/carrot_picker/waypoint_reached_index"
+mission_complete_topic: "/nav_manager/mission_complete"
+
+# VLM parameters
+model_name_or_path: "/home/rll/projects/spot_ws/src/research/vlm_ros/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed"
+temperature: 0.1
+max_new_tokens: 10
+num_samples: 50
+top_k: 0
+num_beams: 1
+debug: true
+
+# VLM topic parameters
+debug_image_topic: "/vlm_ros/image_predicted_trajectories"
+value_map_image_topic_trajectories: "/vlm_ros/value_map_trajectories"
+predicted_paths_2d_topic: "/vlm_ros/predicted_paths_2d"
+predicted_paths_3d_topic: "/vlm_ros/predicted_paths_3d"
+predicted_values_topic: "/vlm_ros/predicted_values"
+
+# VLM frame parameters
+feet_center_frame: "feet_center"
+
+# Value publisher parameters
+imu_topic: ""
+heightmap_topic: ""
+nn_path: ""
+value_map_topic: "/vlm_ros/value_map"
+value_map_image_topic: "/vlm_ros/value_map_image"

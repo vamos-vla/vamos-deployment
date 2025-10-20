@@ -12,16 +12,7 @@ python3 vlm_ros/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/paligemm
 ```
 ### Download Value Function Models
 
-Download the value function model for terrain evaluation:
-
-```bash
-# Create the model directory
-mkdir -p value_functions
-
-# Download the rough terrain critic model
-# (Replace with your actual download command or instructions)
-wget -O value_functions/rough_critic.onnx "your-model-url"
-```
+Value function models are included in the value_functions folder. We have provided a wheeled value function (hound) and and a quadruped function (spot)
 
 ## Configuration
 

@@ -25,6 +25,8 @@ num_samples: 50
 top_k: 0
 num_beams: 1
 debug: true
+use_http_server: false
+http_server_url: "http://localhost:8009"
 
 # VLM topic parameters
 debug_image_topic: "/vlm_ros/image_predicted_trajectories"

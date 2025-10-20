@@ -10,18 +10,6 @@ The system uses Hugging Face models for VLM-based trajectory prediction. Downloa
 # Download the example Paligemma2 model
 python3 vlm_ros/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/paligemma2-3b-pt-224-sft-lora-magicsoup"
 ```
-
-#### What the Download Script Does:
-
-The `dowload_hf_model.py` script:
-- Downloads Hugging Face models using `huggingface_hub`
-- Creates organized model directories under `./models/`
-- Automatically detects and handles `adapter_config.json` files
-- Provides interactive modification of adapter configurations
-- Removes problematic keys (like `eva_config`) that may cause compatibility issues
-- Allows manual editing of configuration files
-- Uses actual files instead of symlinks for better compatibility
-
 ### Download Value Function Models
 
 Download the value function model for terrain evaluation:
@@ -39,7 +27,7 @@ wget -O value_functions/rough_critic.onnx "your-model-url"
 
 ### Custom Configuration File
 
-The system uses `navigate_custom.yaml` for custom robot configurations. This file allows you to configure all aspects of the navigation system for your specific robot setup.
+The system uses `navigate_custom.yaml` for custom robot configurations.
 
 #### Core Navigation Parameters
 
@@ -47,13 +35,13 @@ Edit these parameters in `navigate_custom.yaml`:
 
 ```yaml
 # Core navigation parameters
-image_topic: ""                    # Set your image topic
-depth_topic: ""                    # Set your depth topic  
-depth_camera_info_topic: ""        # Set your camera info topic
-goal_topic: ""                     # Set your goal topic
-robot_frame: ""                    # Set your robot frame
-global_frame: ""                   # Set your global frame
-predictor_type: "vlm"              # Different types only for testing
+image_topic: ""
+depth_topic: ""
+depth_camera_info_topic: ""
+goal_topic: ""                     # Goal should be in global frame
+robot_frame: ""
+global_frame: ""
+predictor_type: "vlm"              # Different types only for testing, always use vlm
 time_threshold: 60                 # Time in seconds before the VLM times out and replans
 debug_subscribers: false           # Set true to debug topic subscribers
 ```
@@ -65,9 +53,9 @@ Configure your VLM model path:
 ```yaml
 # VLM parameters
 model_name_or_path: "/path/to/your/downloaded/model"  # Path to VLM model
-temperature: 0.1                   # Sampling temperature
-max_new_tokens: 10                 # Max tokens to generate
-num_samples: 50                    # Number of trajectory samples
+temperature: 0.1
+max_new_tokens: 10
+num_samples: 50
 debug: true                       # Enable debug visualization
 ```
 
@@ -77,8 +65,8 @@ Configure the value function model:
 
 ```yaml
 # Value publisher parameters
-imu_topic: ""                      # IMU data topic
-heightmap_topic: ""                # Height map data topic
+imu_topic: ""
+heightmap_topic: ""
 nn_path: ""                        # Path to value function model
 value_map_topic: "/vlm_ros/value_map"
 value_map_image_topic: "/vlm_ros/value_map_image"
@@ -97,36 +85,11 @@ predicted_paths_3d_topic: "/vlm_ros/predicted_paths_3d"
 predicted_values_topic: "/vlm_ros/predicted_values"
 ```
 
-## Launch Files
-
-### Custom Launch File
-
-Use the custom launch file to run the navigation system with your configuration:
-
-```bash
-# Launch the navigation system with custom configuration
-roslaunch navigate image_navigate_custom.launch
-```
-
-This launch file:
-- Loads parameters from `navigate_custom.yaml`
-- Starts the VLM inference node
-- Starts the navigation node with your custom configuration
-- Includes the value publisher for terrain evaluation
-
 ### Complete Testing Setup
 
 To test the navigation system with custom configuration:
 
-1. **Configure your topics** in `navigate_custom.yaml`:
-   ```yaml
-   image_topic: "/your_camera/image_raw"
-   depth_topic: "/your_camera/depth/image_raw"
-   depth_camera_info_topic: "/your_camera/depth/camera_info"
-   goal_topic: "/custom/goal"
-   robot_frame: "base_link"
-   global_frame: "map"
-   ```
+1. **Configure your topics** in `navigate_custom.yaml`
 
 2. **Launch the navigation node**:
    ```bash
@@ -142,22 +105,62 @@ To test the navigation system with custom configuration:
 
 The dummy goal publisher is a testing utility that continuously publishes navigation goals to test the navigation system without requiring manual goal input.
 
-### What is the Dummy Goal Publisher?
+## State Machine Documentation
 
-The dummy goal publisher is a ROS node that:
-- Publishes navigation goals at 10Hz to a configurable topic
-- Uses predefined goal positions (x=5.0, y=0.0, z=0.0) with identity orientation
-- Automatically updates timestamps for each published goal
-- Can be configured for different robot types and coordinate frames
-- Essential for testing navigation systems without manual intervention
+The VAMOS navigation system uses a state machine to manage robot navigation behavior.
 
-### Usage
+### Navigation States
 
-The easiest way to run the dummy goal publisher is using the provided launch file:
+The system operates through six distinct states:
 
-```bash
-# Using custom configuration
-roslaunch navigate dummy_goal_publisher_custom.launch
-```
+#### 1. IDLE
+- **Purpose**: Initial state and reset state
+- **Behavior**: 
+  - Resets waypoint tracking counters
+  - Clears previous trajectory data
+- **Transitions**:
+  - `MISSION_COMPLETE` → If mission is finished
+  - `ROTATING_TO_VIEW_GOAL` → If goal is not visible in camera
+  - `AWAITING_VLM_PREDICTION` → If goal is visible in camera
 
-This launch file automatically loads the configuration from `navigate_custom.yaml` and sets up the appropriate parameters.
+#### 2. ROTATING_TO_VIEW_GOAL
+- **Purpose**: Robot turns to bring the goal into camera view
+- **Behavior**:
+  - Generates a turn trajectory when the goal is out of view.
+    - The trajectory consists of a single waypoint that is placed slightly behind the camera
+      and offset laterally to one side, opposite the sign of the goal's x-position in the camera frame.
+- **Transitions**:
+  - `WAITING_FOR_CAMERA` → When goal becomes visible
+  - Continues in same state → If goal still not visible
+
+#### 3. WAITING_FOR_CAMERA
+- **Purpose**: Allows camera to stabilize after rotation
+- **Behavior**:
+  - Waits for configurable delay (`post_rotation_delay` parameter)
+- **Transitions**:
+  - `AWAITING_VLM_PREDICTION` → After stabilization delay
+
+#### 4. AWAITING_VLM_PREDICTION
+- **Purpose**: Generates navigation trajectory using VLM
+- **Behavior**:
+  - Calls VLM to predict 3D waypoints
+- **Transitions**:
+  - `EXECUTING_WAYPOINTS` → If VLM prediction successful
+  - `IDLE` → If VLM prediction fails
+
+#### 5. EXECUTING_WAYPOINTS
+- **Purpose**: Robot follows the predicted trajectory
+- **Behavior**:
+  - Monitors waypoint completion progress
+  - Tracks time since last VLM prediction
+  - Publishes empty path when segment complete or timeout
+- **Transitions**:
+  - `IDLE` → When waypoint segment completed or timeout reached
+
+#### 6. MISSION_COMPLETE
+- **Purpose**: Final state when mission is finished
+- **Behavior**:
+  - Stops all trajectory prediction
+  - Maintains mission complete status
+- **Transitions**:
+  - Stays in `MISSION_COMPLETE` → No further transitions

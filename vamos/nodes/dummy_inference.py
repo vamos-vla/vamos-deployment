@@ -16,9 +16,9 @@ class VLMInferenceNode:
         self.image_height = 0
         self.image_width = 0
 
-        self.path_pub = rospy.Publisher('/vlm_ros/path_2d', Float32MultiArray, queue_size=10)
-        rospy.Subscriber('/vlm_ros/goal_2d', Float32MultiArray, self.goal_callback)
-        rospy.Subscriber('/vlm_ros/input_image', Image, self.image_callback)
+        self.path_pub = rospy.Publisher('/vamos/path_2d', Float32MultiArray, queue_size=10)
+        rospy.Subscriber('/vamos/goal_2d', Float32MultiArray, self.goal_callback)
+        rospy.Subscriber('/vamos/input_image', Image, self.image_callback)
 
         rospy.loginfo("VLM Inference Dummy Node initialized")
 

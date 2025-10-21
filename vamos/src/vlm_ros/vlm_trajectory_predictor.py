@@ -9,7 +9,7 @@ import io
 import base64
 import requests
 from transformers import AutoProcessor, AutoModelForVision2Seq
-from vlm_ros import goal_2d_to_text, decode_trajectory_string
+from vamos import goal_2d_to_text, decode_trajectory_string
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -209,7 +209,7 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
         super().__init__(node_handle, tf_buffer, time_threshold)
 
         # Load parameters from ROS config
-        model_name_or_path = rospy.get_param('~model_name_or_path', "/home/rll/projects/spot_ws/src/research/vlm_ros/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed")
+        model_name_or_path = rospy.get_param('~model_name_or_path', "/home/rll/projects/spot_ws/src/research/vamos/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed")
         self.max_new_tokens = rospy.get_param('~max_new_tokens', 10)
         self.temperature = rospy.get_param('~temperature', 0.1)
         self.num_samples = rospy.get_param('~num_samples', 50)
@@ -282,11 +282,11 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
 
         # Set up debug image publishers
         self.debug = rospy.get_param('~debug', True)
-        debug_image_topic = rospy.get_param('~debug_image_topic', "/vlm_ros/image_predicted_trajectories")
-        value_map_image_topic = rospy.get_param('~value_map_image_topic', "/vlm_ros/value_map_trajectories")
-        predicted_paths_2d_topic = rospy.get_param('~predicted_paths_2d_topic', "/vlm_ros/predicted_paths_2d")
-        predicted_paths_3d_topic = rospy.get_param('~predicted_paths_3d_topic', "/vlm_ros/predicted_paths_3d")
-        predicted_values_topic = rospy.get_param('~predicted_values_topic', "/vlm_ros/predicted_values")
+        debug_image_topic = rospy.get_param('~debug_image_topic', "/vamos/image_predicted_trajectories")
+        value_map_image_topic = rospy.get_param('~value_map_image_topic', "/vamos/value_map_trajectories")
+        predicted_paths_2d_topic = rospy.get_param('~predicted_paths_2d_topic', "/vamos/predicted_paths_2d")
+        predicted_paths_3d_topic = rospy.get_param('~predicted_paths_3d_topic', "/vamos/predicted_paths_3d")
+        predicted_values_topic = rospy.get_param('~predicted_values_topic', "/vamos/predicted_values")
         
         self.debug_image_publisher = rospy.Publisher(
             debug_image_topic,

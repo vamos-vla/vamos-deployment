@@ -8,7 +8,7 @@ The system uses Hugging Face models for VLM-based trajectory prediction. Downloa
 
 ```bash
 # Download the example Paligemma2 model
-python3 vlm_ros/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/paligemma2-3b-pt-224-sft-lora-magicsoup"
+python3 vamos/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/paligemma2-3b-pt-224-sft-lora-magicsoup"
 ```
 ### Download Value Function Models
 
@@ -59,8 +59,8 @@ Configure the value function model:
 imu_topic: ""
 heightmap_topic: ""
 nn_path: ""                        # Path to value function model
-value_map_topic: "/vlm_ros/value_map"
-value_map_image_topic: "/vlm_ros/value_map_image"
+value_map_topic: "/vamos/value_map"
+value_map_image_topic: "/vamos/value_map_image"
 ```
 
 #### Topic Configuration
@@ -69,11 +69,11 @@ Configure all ROS topics for your robot:
 
 ```yaml
 # VLM topic parameters
-debug_image_topic: "/vlm_ros/image_predicted_trajectories"
-value_map_image_topic_trajectories: "/vlm_ros/value_map_trajectories"
-predicted_paths_2d_topic: "/vlm_ros/predicted_paths_2d"
-predicted_paths_3d_topic: "/vlm_ros/predicted_paths_3d"
-predicted_values_topic: "/vlm_ros/predicted_values"
+debug_image_topic: "/vamos/image_predicted_trajectories"
+value_map_image_topic_trajectories: "/vamos/value_map_trajectories"
+predicted_paths_2d_topic: "/vamos/predicted_paths_2d"
+predicted_paths_3d_topic: "/vamos/predicted_paths_3d"
+predicted_values_topic: "/vamos/predicted_values"
 ```
 
 ### Complete Testing Setup

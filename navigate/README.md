@@ -160,7 +160,7 @@ rosrun tf tf_monitor
 - message_filters
 - tf2_ros
 - trajectory_prediction package
-- vlm_ros package
+- vamos package
 
 ## Troubleshooting
 

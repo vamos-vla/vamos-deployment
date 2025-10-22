@@ -5,8 +5,11 @@ import torch
 import os
 import numpy as np
 import time
+import io
+import base64
+import requests
 from transformers import AutoProcessor, AutoModelForVision2Seq
-from vlm_ros import goal_2d_to_text, decode_trajectory_string
+from .data_utils import goal_2d_to_text, decode_trajectory_string
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -206,7 +209,7 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
         super().__init__(node_handle, tf_buffer, time_threshold)
 
         # Load parameters from ROS config
-        model_name_or_path = rospy.get_param('~model_name_or_path', "/home/rll/projects/spot_ws/src/research/vlm_ros/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed")
+        model_name_or_path = rospy.get_param('~model_name_or_path', "/home/rll/projects/spot_ws/src/research/vamos/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed")
         self.max_new_tokens = rospy.get_param('~max_new_tokens', 10)
         self.temperature = rospy.get_param('~temperature', 0.1)
         self.num_samples = rospy.get_param('~num_samples', 50)
@@ -223,6 +226,8 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
         }
         self.torch_dtype = torch.bfloat16
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.use_http_server = rospy.get_param('~use_http_server', False)
+        self.api_base_url = rospy.get_param('~http_server_url', "http://localhost:8009")
         
         if "lora" in model_name_or_path.lower():
             peft_config = PeftConfig.from_pretrained(model_name_or_path)
@@ -277,11 +282,11 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
 
         # Set up debug image publishers
         self.debug = rospy.get_param('~debug', True)
-        debug_image_topic = rospy.get_param('~debug_image_topic', "/vlm_ros/image_predicted_trajectories")
-        value_map_image_topic = rospy.get_param('~value_map_image_topic', "/vlm_ros/value_map_trajectories")
-        predicted_paths_2d_topic = rospy.get_param('~predicted_paths_2d_topic', "/vlm_ros/predicted_paths_2d")
-        predicted_paths_3d_topic = rospy.get_param('~predicted_paths_3d_topic', "/vlm_ros/predicted_paths_3d")
-        predicted_values_topic = rospy.get_param('~predicted_values_topic', "/vlm_ros/predicted_values")
+        debug_image_topic = rospy.get_param('~debug_image_topic', "/vamos/image_predicted_trajectories")
+        value_map_image_topic = rospy.get_param('~value_map_image_topic', "/vamos/value_map_trajectories")
+        predicted_paths_2d_topic = rospy.get_param('~predicted_paths_2d_topic', "/vamos/predicted_paths_2d")
+        predicted_paths_3d_topic = rospy.get_param('~predicted_paths_3d_topic', "/vamos/predicted_paths_3d")
+        predicted_values_topic = rospy.get_param('~predicted_values_topic', "/vamos/predicted_values")
         
         self.debug_image_publisher = rospy.Publisher(
             debug_image_topic,
@@ -391,30 +396,70 @@ class VLMTrajectoryPredictor(TrajectoryPredictorBase):
         img_height = image_data.shape[0]
 
         text_prompt = goal_2d_to_text(goal_2d_coords, img_width, img_height, 1024)
-        command = ["<image><bos>" + text_prompt]
-        image_input = [Image.fromarray(image_data).convert('RGB')]
-
-        tokens = self.processor(
-            text=command,
-            images=image_input,
-            return_tensors="pt",
-            padding="longest",
-        )
-        tokens = tokens.to(self.torch_dtype).to(self.device)
+        
         preprocess_duration = time.time() - preprocess_start_time
+       
+        generated_texts = []
+        if self.use_http_server:
+            try:
+                # Convert image to base64
+                pil_image = Image.fromarray(image_data).convert('RGB')
+                buffer = io.BytesIO()
+                pil_image.save(buffer, format='PNG')
+                image_base64 = base64.b64encode(buffer.getvalue()).decode()
+                
+                # Prepare API request
+                api_data = {
+                    'image_base64': image_base64,
+                    'text_prompt': text_prompt,
+                    'max_tokens': str(self.max_new_tokens),
+                    'temperature': str(self.temperature),
+                    'top_k': str(self.top_k),
+                    'num_beams': str(self.num_beams),
+                    'num_samples': str(self.num_samples)
+                }
+                
+                # Make API call
+                response = requests.post(f"{self.api_base_url}/predict_json", data=api_data, timeout=30)
+                
+                if response.status_code != 200:
+                    rospy.logerr(f"VLM API request failed with status {response.status_code}: {response.text}")
+                    return None
+                    
+                api_result = response.json()
+                
+                if not api_result.get('success', False):
+                    rospy.logerr(f"VLM API returned error: {api_result.get('error_message', 'Unknown error')}")
+                    return None
+                    
+                generated_texts = api_result.get('generated_texts', [])
+                api_trajectories = api_result.get('trajectories', [])
+            except Exception as e:
+                rospy.logerr(f"VLMTrajectoryPredictor: HTTP API call failed: {e}")
+                return None
+        else:
+            command = ["<image><bos>" + text_prompt]
+            image_input = [Image.fromarray(image_data).convert('RGB')]
 
-        # Run the model
-        inference_start_time = time.time()
-        with torch.no_grad():
-            output_tokens = self.model.generate(**tokens, **self.generation_kwargs)
-            if self.device == "cuda":
-                torch.cuda.synchronize()
-        inference_duration = time.time() - inference_start_time
+            tokens = self.processor(
+                text=command,
+                images=image_input,
+                return_tensors="pt",
+                padding="longest",
+            )
+            tokens = tokens.to(self.torch_dtype).to(self.device)
+
+            # Run the model
+            inference_start_time = time.time()
+            with torch.no_grad():
+                output_tokens = self.model.generate(**tokens, **self.generation_kwargs)
+                if self.device == "cuda":
+                    torch.cuda.synchronize()
+            inference_duration = time.time() - inference_start_time
+            generated_texts = self.processor.batch_decode(output_tokens, skip_special_tokens=True)
 
         # Decode the output to 2D
         postprocess_start_time = time.time()
-        generated_texts = self.processor.batch_decode(output_tokens, skip_special_tokens=True)
-        
         all_pred_coords_2d_lists = []
         for text_output in generated_texts:
             try:

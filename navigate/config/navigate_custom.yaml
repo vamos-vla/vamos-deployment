@@ -25,13 +25,15 @@ num_samples: 50
 top_k: 0
 num_beams: 1
 debug: true
+use_http_server: false
+http_server_url: "http://localhost:8009"
 
 # VLM topic parameters
-debug_image_topic: "/vlm_ros/image_predicted_trajectories"
-value_map_image_topic_trajectories: "/vlm_ros/value_map_trajectories"
-predicted_paths_2d_topic: "/vlm_ros/predicted_paths_2d"
-predicted_paths_3d_topic: "/vlm_ros/predicted_paths_3d"
-predicted_values_topic: "/vlm_ros/predicted_values"
+debug_image_topic: "/vamos/image_predicted_trajectories"
+value_map_image_topic_trajectories: "/vamos/value_map_trajectories"
+predicted_paths_2d_topic: "/vamos/predicted_paths_2d"
+predicted_paths_3d_topic: "/vamos/predicted_paths_3d"
+predicted_values_topic: "/vamos/predicted_values"
 
 # VLM frame parameters
 feet_center_frame: "feet_center"
@@ -40,5 +42,5 @@ feet_center_frame: "feet_center"
 imu_topic: ""
 heightmap_topic: ""
 nn_path: ""
-value_map_topic: "/vlm_ros/value_map"
-value_map_image_topic: "/vlm_ros/value_map_image"
+value_map_topic: "/vamos/value_map"
+value_map_image_topic: "/vamos/value_map_image"

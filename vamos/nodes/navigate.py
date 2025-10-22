@@ -34,11 +34,11 @@ class VLMNavigationNode:
         self.goal_topic = rospy.get_param("~goal_topic", "/spot/goal")
         self.odom_topic = rospy.get_param("~odom_topic", "/spot/odometry_corrected")
         self.cmd_vel_topic = rospy.get_param("~cmd_vel_topic", "/spot/cmd_vel")
-        self.goal_2d_topic = rospy.get_param("~goal_2d", "/vlm_ros/goal_2d")
-        self.vlm_input_image_topic = rospy.get_param("~vlm_input_image", "/vlm_ros/input_image")
+        self.goal_2d_topic = rospy.get_param("~goal_2d", "/vamos/goal_2d")
+        self.vlm_input_image_topic = rospy.get_param("~vlm_input_image", "/vamos/input_image")
         
         # Additional parameters
-        self.path_2d_topic = rospy.get_param("~vlm_path_2d_topic", "/vlm_ros/path_2d")
+        self.path_2d_topic = rospy.get_param("~vlm_path_2d_topic", "/vamos/path_2d")
         self.waypoint_distance_threshold = rospy.get_param("~waypoint_distance_threshold", 0.5)
         self.rotation_speed = rospy.get_param("~rotation_speed", 0.5)
         self.visualization_enabled = rospy.get_param("~visualization_enabled", True)

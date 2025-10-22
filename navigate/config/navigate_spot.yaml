@@ -27,11 +27,11 @@ num_beams: 1
 debug: true
 
 # VLM topic parameters
-debug_image_topic: "/vlm_ros/image_predicted_trajectories"
-value_map_image_topic: "/vlm_ros/value_map_trajectories"
-predicted_paths_2d_topic: "/vlm_ros/predicted_paths_2d"
-predicted_paths_3d_topic: "/vlm_ros/predicted_paths_3d"
-predicted_values_topic: "/vlm_ros/predicted_values"
+debug_image_topic: "/vamos/image_predicted_trajectories"
+value_map_image_topic: "/vamos/value_map_trajectories"
+predicted_paths_2d_topic: "/vamos/predicted_paths_2d"
+predicted_paths_3d_topic: "/vamos/predicted_paths_3d"
+predicted_values_topic: "/vamos/predicted_values"
 
 # VLM frame parameters
 feet_center_frame: "feet_center"

@@ -5,13 +5,13 @@ depth_topic: /zed2/zed_node/depth/depth_registered  # /zed2/zed_node/depth/depth
 depth_camera_info: /zed2/zed_node/depth/camera_info
 goal_topic: /spot/goal
 odom_topic: /spot/odometry_corrected
-vlm_path_2d_topic: /vlm_ros/path_2d
+vlm_path_2d_topic: /vamos/path_2d
 
 
 # Output topics
 cmd_vel_topic: /spot/cmd_vel
-goal_2d: /vlm_ros/goal_2d
-vlm_input_image: /vlm_ros/input_image
+goal_2d: /vamos/goal_2d
+vlm_input_image: /vamos/input_image
 
 # Navigation parameters
 waypoint_distance_threshold: 0.5

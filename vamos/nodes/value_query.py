@@ -42,7 +42,7 @@ def traversability_estimator(origin, goals, trav_map, resolution, n=20):
 class TraversabilityEstimator(object):
     def __init__(self):
         # parameters
-        self.image_topic = rospy.get_param('~image_topic', '/vlm_ros/value_map_image')
+        self.image_topic = rospy.get_param('~image_topic', '/vamos/value_map_image')
         self.clicked_point_topic = rospy.get_param('~clicked_point_topic', '/clicked_point')
         self.resolution = rospy.get_param('~resolution', 0.25)  # meters/cell
 

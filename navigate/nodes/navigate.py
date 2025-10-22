@@ -12,7 +12,7 @@ import threading
 import time
 from queue import Queue, Empty, Full
 from trajectory_prediction import Packet, TrajectoryPredictorBase, DummyTrajectoryPredictor
-from vlm_ros import VLMTrajectoryPredictor
+from vamos import VLMTrajectoryPredictor
 
 PREDICTOR_MAP = {
     "base": TrajectoryPredictorBase,
@@ -72,7 +72,7 @@ class Navigation2dNode:
         print(f"Subscribing to goal topic: {self.goal_topic}")
 
         # Add subscriber to value map topic
-        self.value_map_topic = rospy.get_param('~value_map_image_topic_trajectories', '/vlm_ros/value_map_image')
+        self.value_map_topic = rospy.get_param('~value_map_image_topic_trajectories', '/vamos/value_map_image')
 
         self.predictor_type = rospy.get_param("~predictor_type", "dummy")
         self.time_threshold = rospy.get_param("~time_threshold", 1000)

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>vlm_ros</name>
+  <name>vamos</name>
   <version>0.0.1</version>
   <description>ROS package to interface with navigation VLM</description>
 

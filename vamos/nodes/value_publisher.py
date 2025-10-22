@@ -30,8 +30,8 @@ class ValuePublisher:
         rospy.Subscriber(heightmap_topic, Float32MultiArray, self.heightmap_callback)
         
         # Publisher
-        value_map_topic = rospy.get_param('~value_map_topic', '/vlm_ros/value_map')
-        value_map_image_topic = rospy.get_param('~value_map_image_topic', '/vlm_ros/value_map_image')
+        value_map_topic = rospy.get_param('~value_map_topic', '/vamos/value_map')
+        value_map_image_topic = rospy.get_param('~value_map_image_topic', '/vamos/value_map_image')
         self.value_pub = rospy.Publisher(value_map_topic, GridMap, queue_size=1)
         self.image_pub = rospy.Publisher(value_map_image_topic, Image, queue_size=1)
         self.bridge = CvBridge()

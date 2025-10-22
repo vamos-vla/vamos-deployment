@@ -18,7 +18,7 @@ waypoint_reached_topic: "/carrot_picker/waypoint_reached_index"
 mission_complete_topic: "/nav_manager/mission_complete"
 
 # VLM parameters
-model_name_or_path: "/home/rll/projects/spot_ws/src/research/vamos/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed"
+model_name_or_path: "/home/rll/projects/spot_ws/src/research/vlm_ros/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed"
 temperature: 0.1
 max_new_tokens: 10
 num_samples: 50

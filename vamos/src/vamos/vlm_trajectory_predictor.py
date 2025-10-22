@@ -9,7 +9,7 @@ import io
 import base64
 import requests
 from transformers import AutoProcessor, AutoModelForVision2Seq
-from vamos import goal_2d_to_text, decode_trajectory_string
+from .data_utils import goal_2d_to_text, decode_trajectory_string
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm

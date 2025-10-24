@@ -5,7 +5,7 @@
 # Default values
 HOST="0.0.0.0"
 PORT="8009"
-MODEL_PATH="mateoguaman/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed"
+MODEL_PATH="mateoguaman/vamos"
 USE_FP32=""
 TRUST_REMOTE_CODE="--trust_remote_code"
 

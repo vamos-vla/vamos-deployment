@@ -8,7 +8,7 @@ The system uses Hugging Face models for VLM-based trajectory prediction. Downloa
 
 ```bash
 # Download the example Paligemma2 model
-python3 vamos/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/paligemma2-3b-pt-224-sft-lora-magicsoup"
+python3 vamos/src/vlm_ros/dowload_hf_model.py --model_id "mateoguaman/vamos_navigation_only"
 ```
 ### Download Value Function Models
 

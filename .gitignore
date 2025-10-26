@@ -90,8 +90,6 @@ logs/
 node_modules/
 
 # Test images and data
-test_images/
-*.jpg
 *.jpeg
 *.png
 *.gif

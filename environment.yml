@@ -7,17 +7,23 @@ channels:
   - defaults
 
 variables:
-  # Tell modern CMake to accept old-style CMakeLists.txt that say 3.0.2, etc.
+  # Let legacy CMakeLists (cmake_minimum_required(VERSION 3.0.2)) configure
   CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
 dependencies:
-  # ROS Noetic (RoboStack will pull compatible python/numpy)
+  # ROS Noetic core (this pulls Python, rospy, etc.)
   - ros-noetic-desktop
+
+  # Image transport plugins used by your launch file
+  - ros-noetic-image-transport-plugins
+  - ros-noetic-compressed-image-transport
+  # (compressedDepth is still provided by compressed_depth_image_transport inside robostack in some builds,
+  #  but if it's not published for linux-64 we can't list it here explicitly. We'll rely on whatever comes with plugins.)
 
   # Build / workspace tooling
   - catkin_tools
   - colcon-common-extensions
-  - cmake=3.22        # pin CMake to something friendlier for ROS1-era packages
+  - cmake=3.22
   - make
   - ninja
   - pkg-config
@@ -29,7 +35,8 @@ dependencies:
   - cudatoolkit=11.8
 
   # Vision / SciPy stack
-  - opencv
+  # IMPORTANT: pin OpenCV to 4.10 so libopencv_core.so.410 exists
+  - opencv=4.10
   - pillow
   - matplotlib
   - scipy
@@ -63,3 +70,5 @@ dependencies:
       - huggingface-hub
       - datasets
       - tokenizers
+      - "optimum[exporters]"
+      - "optimum[onnxruntime]"

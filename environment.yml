@@ -1,0 +1,65 @@
+name: vamos
+channels:
+  - robostack-noetic
+  - conda-forge
+  - pytorch
+  - nvidia
+  - defaults
+
+variables:
+  # Tell modern CMake to accept old-style CMakeLists.txt that say 3.0.2, etc.
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
+
+dependencies:
+  # ROS Noetic (RoboStack will pull compatible python/numpy)
+  - ros-noetic-desktop
+
+  # Build / workspace tooling
+  - catkin_tools
+  - colcon-common-extensions
+  - cmake=3.22        # pin CMake to something friendlier for ROS1-era packages
+  - make
+  - ninja
+  - pkg-config
+
+  # Core ML / GPU
+  - pytorch
+  - torchvision
+  - pytorch-cuda=11.8
+  - cudatoolkit=11.8
+
+  # Vision / SciPy stack
+  - opencv
+  - pillow
+  - matplotlib
+  - scipy
+  - scikit-learn
+  - pandas
+
+  # Web / API
+  - fastapi
+  - uvicorn
+  - pydantic
+
+  # Utilities
+  - psutil
+  - tqdm
+
+  # Jupyter / dev
+  - jupyter
+  - ipykernel
+  - notebook
+
+  # ONNX / interop
+  - onnx
+  - onnxruntime
+
+  # pip ecosystem
+  - pip
+  - pip:
+      - transformers
+      - peft
+      - accelerate
+      - huggingface-hub
+      - datasets
+      - tokenizers

@@ -1,9 +1,9 @@
-image_topic: ""
-depth_topic: ""
-depth_camera_info_topic: ""
-goal_topic: ""
-robot_frame: ""
-global_frame: ""
+image_topic: "image"
+depth_topic: "image"
+depth_camera_info_topic: "image"
+goal_topic: image"
+robot_frame: "image"
+global_frame: "image"
 predictor_type: "vlm" # Different types only for testing
 time_threshold: 60 # Time in seconds before the VLM times out and replans
 debug_subscribers: false # Set true to debug topic subscribers
@@ -18,7 +18,7 @@ waypoint_reached_topic: "/carrot_picker/waypoint_reached_index"
 mission_complete_topic: "/nav_manager/mission_complete"
 
 # VLM parameters
-model_name_or_path: "/home/rll/projects/spot_ws/src/research/vlm_ros/models/paligemma2-3b-pt-224-sft-lora-vamos_10pct_gpt5_mini_cocoqa_localized_narratives_fixed"
+model_name_or_path: "/home/daniel/Github/vamos-deployment/vamos_ws/src/vamos/src/vamos/models/vamos_navigation_only"
 temperature: 0.1
 max_new_tokens: 10
 num_samples: 50
@@ -39,8 +39,8 @@ predicted_values_topic: "/vamos/predicted_values"
 feet_center_frame: "feet_center"
 
 # Value publisher parameters
-imu_topic: ""
-heightmap_topic: ""
-nn_path: ""
+imu_topic: "image"
+heightmap_topic: "image"
+nn_path: "image"
 value_map_topic: "/vamos/value_map"
 value_map_image_topic: "/vamos/value_map_image"

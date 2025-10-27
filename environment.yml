@@ -3,39 +3,27 @@ channels:
   - robostack-noetic
   - conda-forge
   - pytorch
-  - nvidia
   - defaults
+  - nodefaults
 
 variables:
-  # Let legacy CMakeLists (cmake_minimum_required(VERSION 3.0.2)) configure
   CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
 dependencies:
-  # ROS Noetic core (this pulls Python, rospy, etc.)
+  - python=3.11
+
+  # ROS core stack
   - ros-noetic-desktop
 
-  # Image transport plugins used by your launch file
-  - ros-noetic-image-transport-plugins
-  - ros-noetic-compressed-image-transport
-  # (compressedDepth is still provided by compressed_depth_image_transport inside robostack in some builds,
-  #  but if it's not published for linux-64 we can't list it here explicitly. We'll rely on whatever comes with plugins.)
-
-  # Build / workspace tooling
+  # build / workspace tooling
   - catkin_tools
   - colcon-common-extensions
-  - cmake=3.22
+  - cmake
   - make
   - ninja
   - pkg-config
 
-  # Core ML / GPU
-  - pytorch
-  - torchvision
-  - pytorch-cuda=11.8
-  - cudatoolkit=11.8
-
-  # Vision / SciPy stack
-  # IMPORTANT: pin OpenCV to 4.10 so libopencv_core.so.410 exists
+  # vision / science stack
   - opencv=4.10
   - pillow
   - matplotlib
@@ -43,16 +31,14 @@ dependencies:
   - scikit-learn
   - pandas
 
-  # Web / API
+  # web / infra / utils
   - fastapi
   - uvicorn
   - pydantic
-
-  # Utilities
   - psutil
   - tqdm
 
-  # Jupyter / dev
+  # notebooks / dev
   - jupyter
   - ipykernel
   - notebook
@@ -61,9 +47,23 @@ dependencies:
   - onnx
   - onnxruntime
 
-  # pip ecosystem
+  # lightweight CPU torch placeholder just to satisfy solver;
+  # we'll override it via pip with GPU torch.
+  - pytorch
+  - torchvision
+
   - pip
   - pip:
+      # 1. Point pip to the CUDA 12.1 wheel index for the next installs
+      - --index-url https://download.pytorch.org/whl/cu121
+
+      # 2. Install GPU-enabled PyTorch stack (CUDA 12.1 builds)
+      #    These versions exist on the cu121 index.
+      - torch==2.5.1
+      - torchvision==0.20.1
+      - torchaudio==2.5.1
+
+      # 3. Your ML / HF stack
       - transformers
       - peft
       - accelerate

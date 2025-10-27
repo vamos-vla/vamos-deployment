@@ -8,7 +8,7 @@ from grid_map_msgs.msg import GridMap
 from std_msgs.msg import Header
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import MarkerArray
-from utils.value_processor import ValueProcessor
+from ValueProcessor import ValueProcessor
 from std_msgs.msg import MultiArrayLayout as MAL
 from std_msgs.msg import MultiArrayDimension as MAD
 from cv_bridge import CvBridge

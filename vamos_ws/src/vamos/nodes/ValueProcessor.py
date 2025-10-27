@@ -1,6 +1,6 @@
 import onnxruntime as ort
 import numpy as np
-from isaaclab.observations import gravity_body_frame
+# from isaaclab.observations import gravity_body_frame
 
 class ValueProcessor:
 
@@ -40,12 +40,12 @@ class ValueProcessor:
         output = model_output[0, :, :]
         return output
 
-    def inference_goal(self, goals, orientation, elevation_map):
-        gravity = gravity_body_frame(orientation)
-        input_data = np.zeros((goals.shape[0], self.input_shape), dtype=np.float32)
-        input_data[:, :self.input_shape - 5] = elevation_map
-        input_data[:, self.input_shape - 5:self.input_shape - 2] = gravity
-        input_data[:, self.input_shape - 2:] = goals
-        inputs = {self.input_name: input_data}
-        model_output = self.model.run(None, inputs)[0]
-        return model_output
+    # def inference_goal(self, goals, orientation, elevation_map):
+    #     gravity = gravity_body_frame(orientation)
+    #     input_data = np.zeros((goals.shape[0], self.input_shape), dtype=np.float32)
+    #     input_data[:, :self.input_shape - 5] = elevation_map
+    #     input_data[:, self.input_shape - 5:self.input_shape - 2] = gravity
+    #     input_data[:, self.input_shape - 2:] = goals
+    #     inputs = {self.input_name: input_data}
+    #     model_output = self.model.run(None, inputs)[0]
+    #     return model_output

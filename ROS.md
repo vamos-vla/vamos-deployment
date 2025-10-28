@@ -97,6 +97,10 @@ To test the navigation system with custom configuration:
    roslaunch navigate dummy_goal_publisher_custom.launch
    ```
 
+### System Considerations
+
+Note that the navigate launch file will output paths in 3D, but as part of the state machine, one of the states is "ROTATING_TO_VIEW_GOAL". This state is communicated to any downstream controller by a single waypoint behind and to the side of the robot, which a downstream controller should interpret as a command to rotate in place. For instance, you can have a PID controller on the angle difference which would cause the robot to rotate in place when this package outputs paths behind and to the side of the robot. 
+
 ## Dummy Goal Publisher
 
 The dummy goal publisher is a testing utility that continuously publishes navigation goals to test the navigation system without requiring manual goal input.

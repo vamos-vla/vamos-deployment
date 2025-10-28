@@ -9,15 +9,17 @@ IMPORTANT: Make sure to find and set the vlm path from the model download in the
 
 ```bash
 chmod +x ./setup.sh
-./setup.sh
+./setup.sh  # By default this downloads the navigation_only (i.e. non-steerable) model which we used in our navigation experiments, but feel free to download the steerable one from mateoguaman/vamos 
 cd vamos_ws
-catkin_make
-sourc devel/setup,bash
+catkin build
+source devel/setup.bash
 ```
-### Download Value Function Models
+### Download Affordance Models
 
-The Value Function Models are hosted on [Hugging Face](https://huggingface.co/collections/mateoguaman/vamos-a-hierarchical-vision-language-action-model-for-capab). 
+The Affordance Models are hosted on [Hugging Face](https://huggingface.co/collections/mateoguaman/vamos-a-hierarchical-vision-language-action-model-for-capab). 
 Download the desired model files, then update the `nn_path` parameter in your configuration file (`navigate_custom.yaml`) to point to the downloaded model location.
+
+Note: You can also run VAMOS without the affordance models, or you can train your own and replace it here, but you'd hav eto modify the code.
 
 ## Configuration
 
